@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PlcFactory<Lang extends PlcLanguage> extends SerializedICFactory<PlcIC, PlcFactory.PlcStateData> {
+public class PlcFactory<Lang extends PlcLanguage> extends SerializedICFactory<PlcIC<Lang>, PlcFactory.PlcStateData> {
     private Lang lang;
 
     public PlcFactory(Lang lang) {
@@ -22,7 +22,7 @@ public class PlcFactory<Lang extends PlcLanguage> extends SerializedICFactory<Pl
     }
 
     @Override
-    public PlcIC createInstance(Location<World> location) {
+    public PlcIC<Lang> createInstance(Location<World> location) {
         return new PlcIC<>(this, location, lang);
     }
 
@@ -31,17 +31,21 @@ public class PlcFactory<Lang extends PlcLanguage> extends SerializedICFactory<Pl
         PlcStateData state = new PlcStateData();
 
         state.state = container.getBooleanList(DataQuery.of("State")).orElse(new ArrayList<>());
+        state.languageName = container.getString(DataQuery.of("LanguageName")).orElse("Perlstone");
+        state.codeString = container.getString(DataQuery.of("Code")).orElse("");
+        state.error = container.getBoolean(DataQuery.of("Error")).orElse(false);
+        state.errorCode = container.getString(DataQuery.of("ErrorCode")).orElse("");
 
         return Optional.of(state);
     }
 
     @Override
-    public PlcStateData getData(PlcIC ic) {
+    public PlcStateData getData(PlcIC<Lang> ic) {
         return ic.state;
     }
 
     @Override
-    public void setData(PlcIC ic, PlcStateData data) {
+    public void setData(PlcIC<Lang> ic, PlcStateData data) {
         ic.state = data;
     }
 
@@ -57,6 +61,10 @@ public class PlcFactory<Lang extends PlcLanguage> extends SerializedICFactory<Pl
 
     public static class PlcStateData extends SerializedICData {
         public List<Boolean> state;
+        public String languageName;
+        public String codeString;
+        public boolean error;
+        public String errorCode;
 
         @Override
         public int getContentVersion() {
@@ -66,7 +74,11 @@ public class PlcFactory<Lang extends PlcLanguage> extends SerializedICFactory<Pl
         @Override
         public DataContainer toContainer() {
             return super.toContainer()
-                    .set(DataQuery.of("State"), this.state);
+                    .set(DataQuery.of("State"), this.state)
+                    .set(DataQuery.of("LanguageName"), this.languageName)
+                    .set(DataQuery.of("Code"), this.codeString)
+                    .set(DataQuery.of("Error"), this.error)
+                    .set(DataQuery.of("ErrorCode"), this.errorCode);
         }
     }
 }
