@@ -67,20 +67,29 @@ public class PlcFactory<Lang extends PlcLanguage> extends SerializedICFactory<Pl
 
     @Override
     public String[] getLineHelp() {
-        return new String[] {"PLC ID", "Shared Access ID"};
+        return new String[] {"", ""};
     }
 
     @Override
     public String[][] getPinHelp() {
-        return new String[0][];
+        return new String[][] {
+                new String[] {
+                        "Programmable Input",
+                        "Programmable Input",
+                        "Programmable Input"
+                },
+                new String[] {
+                        "Program Output"
+                }
+        };
     }
 
     public static class PlcStateData extends SerializedICData {
         public List<Boolean> state;
         public String languageName;
-        public String codeString;
+        public String codeString = "";
         public boolean error;
-        public String errorCode;
+        public String errorCode = "";
 
         @Override
         public int getContentVersion() {

@@ -55,6 +55,7 @@ public class PlcIC<Lang extends PlcLanguage> extends IC {
         state = new PlcFactory.PlcStateData();
 
         state.state = lang.initState();
+        state.languageName = lang.getName();
     }
 
     public void load() {
